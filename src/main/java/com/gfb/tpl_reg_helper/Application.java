@@ -1,11 +1,11 @@
-package com.gfb.tmp_reg_helper;
+package com.gfb.tpl_reg_helper;
 
-import com.gfb.tmp_reg_helper.domain.IdentityDocument;
-import com.gfb.tmp_reg_helper.domain.Person;
-import com.gfb.tmp_reg_helper.domain.PlaceOfBirth;
-import com.gfb.tmp_reg_helper.domain.RightToStayConfirmingDocument;
-import com.gfb.tmp_reg_helper.ui.DateBlock;
-import com.gfb.tmp_reg_helper.ui.EnumSelectBlock;
+import com.gfb.tpl_reg_helper.domain.IdentityDocument;
+import com.gfb.tpl_reg_helper.domain.Person;
+import com.gfb.tpl_reg_helper.domain.PlaceOfBirth;
+import com.gfb.tpl_reg_helper.domain.RightToStayConfirmingDocument;
+import com.gfb.tpl_reg_helper.ui.DateBlock;
+import com.gfb.tpl_reg_helper.ui.EnumSelectBlock;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
@@ -115,7 +115,7 @@ public class Application {
 
         //
 
-        String appDir = System.getProperty("user.home") + "/tmp-reg-helper";
+        String appDir = System.getProperty("user.home") + "/tpl-reg-helper";
         String filenameSuffix = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date()) + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
         File file = cloneBlankDoc(appDir, "blank-form.xls", filenameSuffix);
         HSSFWorkbook book = new HSSFWorkbook(new FileInputStream(file));
@@ -258,7 +258,6 @@ public class Application {
         OutputStream outStream = null;
 
         File afile = new File(appDir + "/" + blankFilename);
-//        File bfile = new File("/home/goforbroke/IdeaProjects/tmp-reg-helper/src/main/resources/result.xls");
         File bfile = new File(appDir + "/" + resultFilename + ".xls");
 
         inStream = new FileInputStream(afile);

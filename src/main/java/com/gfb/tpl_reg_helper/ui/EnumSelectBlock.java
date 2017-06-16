@@ -1,4 +1,4 @@
-package com.gfb.tmp_reg_helper.ui;
+package com.gfb.tpl_reg_helper.ui;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,10 +30,10 @@ public class EnumSelectBlock<E extends Enum> implements IUIBlock<E> {
                 + ": ");
         int genderCounter = 1;
         for (Enum anEnum : enumConstants) {
-            System.out.println(genderCounter + ")" + anEnum.name());
+            System.out.println(genderCounter + ") " + anEnum.name());
             genderCounter++;
         }
-        System.out.print("Select case: ");
+        System.out.print("  Select case: ");
         String line = null;
         try {
             line = reader.readLine();

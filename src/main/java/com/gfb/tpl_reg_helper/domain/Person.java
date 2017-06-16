@@ -1,4 +1,4 @@
-package com.gfb.tmp_reg_helper.domain;
+package com.gfb.tpl_reg_helper.domain;
 
 import java.util.Date;
 

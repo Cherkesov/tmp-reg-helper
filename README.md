@@ -1,3 +1,3 @@
-# tmp-reg-helper
+# tpl-reg-helper
 
 Some inner project ...

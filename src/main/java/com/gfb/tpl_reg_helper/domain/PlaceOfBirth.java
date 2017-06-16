@@ -1,4 +1,4 @@
-package com.gfb.tmp_reg_helper.domain;
+package com.gfb.tpl_reg_helper.domain;
 
 /**
  * Created by goforbroke on 12.06.17.

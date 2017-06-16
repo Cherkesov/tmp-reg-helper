@@ -1,4 +1,4 @@
-package com.gfb.tmp_reg_helper.ui;
+package com.gfb.tpl_reg_helper.ui;
 
 import java.io.BufferedReader;
 
