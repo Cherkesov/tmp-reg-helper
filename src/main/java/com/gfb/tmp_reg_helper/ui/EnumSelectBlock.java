@@ -2,39 +2,34 @@ package com.gfb.tmp_reg_helper.ui;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * Created by goforbroke on 13.06.17.
  */
-public class EnumSelectBlock<T extends Enum> implements IUIBlock {
+public class EnumSelectBlock<E extends Enum> implements IUIBlock<E> {
 
-    private Class<T> enumClass;
+    private E[] enumConstants;
 
-    public EnumSelectBlock(Class<T> enumClass) {
-        this.enumClass = enumClass;
+    public EnumSelectBlock(E[] enumConstants) {
+        this.enumConstants = enumConstants;
     }
 
     @Override
-    public Object apply(InputStream in, String propertyName) {
-        return this.apply(in, propertyName, null);
+    public E apply(BufferedReader reader, String propertyName) {
+        return this.apply(reader, propertyName, null);
     }
 
     @Override
-    public T apply(
-            InputStream in,
+    public E apply(
+            BufferedReader reader,
             String propertyName,
-            Object defaultValue
+            E defaultValue
     ) {
-        BufferedReader reader = null;
-        reader = new BufferedReader(new InputStreamReader(in));
-
         System.out.println(propertyName
                 + (null != defaultValue ? " [" + defaultValue + "]" : "")
                 + ": ");
         int genderCounter = 1;
-        for (Enum anEnum : enumClass.getEnumConstants()) {
+        for (Enum anEnum : enumConstants) {
             System.out.println(genderCounter + ")" + anEnum.name());
             genderCounter++;
         }
@@ -48,7 +43,7 @@ public class EnumSelectBlock<T extends Enum> implements IUIBlock {
         }
         if (line.length() > 0) {
             int genderPos = Integer.parseInt(line);
-            return enumClass.getEnumConstants()[genderPos - 1];
+            return enumConstants[genderPos - 1];
         }
         return null;
     }

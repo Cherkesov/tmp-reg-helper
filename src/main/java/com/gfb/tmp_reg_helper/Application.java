@@ -4,6 +4,7 @@ import com.gfb.tmp_reg_helper.domain.IdentityDocument;
 import com.gfb.tmp_reg_helper.domain.Person;
 import com.gfb.tmp_reg_helper.domain.PlaceOfBirth;
 import com.gfb.tmp_reg_helper.domain.RightToStayConfirmingDocument;
+import com.gfb.tmp_reg_helper.ui.DateBlock;
 import com.gfb.tmp_reg_helper.ui.EnumSelectBlock;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -23,6 +24,9 @@ import java.util.Date;
 public class Application {
     public static void main(String[] args) throws IOException, ParseException {
 
+        BufferedReader reader = null;
+        reader = new BufferedReader(new InputStreamReader(System.in));
+
         System.out.println("---------- ---------- ---------- ----------");
         System.out.println("Hello, " + System.getProperty("user.name") + "! =))");
         System.out.println("---------- ---------- ---------- ----------\n\n");
@@ -30,58 +34,89 @@ public class Application {
         System.out.println("Please, enter information about foreign citizen:\n");
 
         Person citizen = new Person();
-        citizen.setLastName("Иванов").setFirstName("Петр");
-        citizen.setNationality("Зимбабвэ");
-        citizen.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse("1990-06-10"));
-        citizen.setGender(Person.Genders.MALE);
-        citizen.setPlaceOfBirth(
-                new PlaceOfBirth()
-                        .setCounty("Румыния")
-                        .setCity("Велико-Дичь")
-        );
-        citizen.setIdentityDocument(
-                new IdentityDocument()
-                        .setSeries("ДИЧЬ")
-                        .setIdentifier("ПОЛНАЯ007")
-                        .setDateOfIssueDate(new SimpleDateFormat("yyyy-MM-dd").parse("2000-06-10"))
-                        .setValidityTillDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-06-10"))
-        );
-        citizen.setStayConfirmingDocument(
-                new RightToStayConfirmingDocument()
-                        .setSeries("ДИЧЬ")
-                        .setIdentifier("A6A6A6A66")
-                        .setDateOfIssueDate(new SimpleDateFormat("yyyy-MM-dd").parse("2000-06-10"))
-                        .setValidityTillDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-06-10"))
-        );
 
 
-        /*System.out.print("Last name: ");
-        citizen.setLastName(br.readLine());
+        System.out.print("Last name: ");
+        citizen.setLastName(reader.readLine());
 
         System.out.print("First name: ");
-        citizen.setFirstName(br.readLine());
+        citizen.setFirstName(reader.readLine());
 
-        System.out.println("Gender [" + citizen.getGender().name() + "]: ");
-        int genderCounter = 1;
-        for (Person.Genders gender : Person.Genders.values()) {
-            System.out.println(genderCounter + ")" + gender.name());
-            genderCounter++;
-        }
-        System.out.print("Select number: ");
-        String line = br.readLine();
-        if (line.length() > 0) {
-            int genderPos = Integer.parseInt(line);
-            citizen.setGender(Person.Genders.values()[genderPos - 1]);
-        }*/
+        System.out.print("Nationality: ");
+        citizen.setNationality(reader.readLine());
 
-        Person.Genders gender = new EnumSelectBlock<Person.Genders>(Person.Genders.class)
-                .apply(System.in, "Gender", citizen.getGender());
+        Date birthday = new DateBlock().apply(reader, "Birthday", null);
+        citizen.setBirthday(birthday);
+
+        Person.Genders gender = new EnumSelectBlock<Person.Genders>(Person.Genders.class.getEnumConstants())
+                .apply(reader, "Gender", citizen.getGender());
         citizen.setGender(gender);
+
+        PlaceOfBirth placeOfBirth = new PlaceOfBirth();
+        System.out.print("Birth country: ");
+        placeOfBirth.setCounty(reader.readLine());
+        System.out.print("Birth city: ");
+        placeOfBirth.setCity(reader.readLine());
+        citizen.setPlaceOfBirth(placeOfBirth);
+
+        System.out.println("Identity document (like a passport): ");
+        {
+            IdentityDocument document = new IdentityDocument();
+
+            IdentityDocument.Types type =
+                    new EnumSelectBlock<IdentityDocument.Types>(IdentityDocument.Types.class.getEnumConstants())
+                            .apply(reader, "  Type", document.getType());
+            document.setType(type);
+
+            System.out.print("  Series: ");
+            document.setSeries(reader.readLine());
+
+            System.out.print("  Number: ");
+            document.setIdentifier(reader.readLine());
+
+            Date date1 = new DateBlock().apply(reader, "  Start date", null);
+            document.setDateOfIssueDate(date1);
+
+            Date date2 = new DateBlock().apply(reader, "  Stop date", null);
+            document.setValidityTillDate(date2);
+
+            citizen.setIdentityDocument(document);
+            citizen.setPlaceOfBirth(placeOfBirth);
+        }
+
+        System.out.println("Identity document (like a passport): ");
+        {
+            RightToStayConfirmingDocument document = new RightToStayConfirmingDocument();
+
+            RightToStayConfirmingDocument.Types type =
+                    new EnumSelectBlock<RightToStayConfirmingDocument.Types>(RightToStayConfirmingDocument.Types.class.getEnumConstants())
+                    .apply(reader, "  Type", document.getType());
+            document.setType(type);
+
+            System.out.print("  Series: ");
+            document.setSeries(reader.readLine());
+
+            System.out.print("  Number: ");
+            document.setIdentifier(reader.readLine());
+
+            Date date1 = new DateBlock().apply(reader, "  Start date", null);
+            document.setDateOfIssueDate(date1);
+
+            Date date2 = new DateBlock().apply(reader, "  Stop date", null);
+            document.setValidityTillDate(date2);
+
+            citizen.setStayConfirmingDocument(document);
+        }
+
+        Person.Purposes purpose =
+                new EnumSelectBlock<Person.Purposes>(Person.Purposes.class.getEnumConstants())
+                        .apply(reader, "  Purpose", citizen.getPurpose());
+        citizen.setPurpose(purpose);
 
         //
 
         String appDir = System.getProperty("user.home") + "/tmp-reg-helper";
-        String filenameSuffix = new Date().toGMTString() + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
+        String filenameSuffix = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date()) + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
         File file = cloneBlankDoc(appDir, "blank-form.xls", filenameSuffix);
         HSSFWorkbook book = new HSSFWorkbook(new FileInputStream(file));
         HSSFSheet sheet = book.getSheet("стр.1");
