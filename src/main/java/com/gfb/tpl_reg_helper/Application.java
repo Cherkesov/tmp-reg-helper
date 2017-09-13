@@ -18,10 +18,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by goforbroke on 12.06.17.
- */
 public class Application {
+
+    public static final SimpleDateFormat RUSSIAN_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+
     public static void main(String[] args) throws IOException, ParseException {
 
         BufferedReader reader = null;
@@ -39,13 +39,14 @@ public class Application {
         System.out.print("Last name: ");
         citizen.setLastName(reader.readLine());
 
-        System.out.print("First name: ");
+        System.out.print("First (and second if exists) name: ");
         citizen.setFirstName(reader.readLine());
 
         System.out.print("Nationality: ");
         citizen.setNationality(reader.readLine());
 
-        Date birthday = new DateBlock().apply(reader, "Birthday", null);
+        Date birthday = new DateBlock(RUSSIAN_DATE_FORMAT)
+                .apply(reader, "Birthday", null);
         citizen.setBirthday(birthday);
 
         Person.Genders gender = new EnumSelectBlock<Person.Genders>(Person.Genders.class.getEnumConstants())
@@ -74,10 +75,12 @@ public class Application {
             System.out.print("  Number: ");
             document.setIdentifier(reader.readLine());
 
-            Date date1 = new DateBlock().apply(reader, "  Start date", null);
+            Date date1 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+                    .apply(reader, "  Start date", null);
             document.setDateOfIssueDate(date1);
 
-            Date date2 = new DateBlock().apply(reader, "  Stop date", null);
+            Date date2 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+                    .apply(reader, "  Stop date", null);
             document.setValidityTillDate(date2);
 
             citizen.setIdentityDocument(document);
@@ -99,10 +102,12 @@ public class Application {
             System.out.print("  Number: ");
             document.setIdentifier(reader.readLine());
 
-            Date date1 = new DateBlock().apply(reader, "  Start date", null);
+            Date date1 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+                    .apply(reader, "  Start date", null);
             document.setDateOfIssueDate(date1);
 
-            Date date2 = new DateBlock().apply(reader, "  Stop date", null);
+            Date date2 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+                    .apply(reader, "  Stop date", null);
             document.setValidityTillDate(date2);
 
             citizen.setStayConfirmingDocument(document);
@@ -125,14 +130,18 @@ public class Application {
         writeToDoc(sheet, new CellReference("W15"), citizen.getFirstName());
         writeToDoc(sheet, new CellReference("AA18"), citizen.getNationality());
 
+        writeToDoc(sheet, new CellReference("W69"), citizen.getLastName());
+        writeToDoc(sheet, new CellReference("W71"), citizen.getFirstName());
+        writeToDoc(sheet, new CellReference("AA74"), citizen.getNationality());
+
         writeDateToDoc(sheet, citizen.getBirthday(), "AE21", "AU21", "BG21");
+        writeDateToDoc(sheet, citizen.getBirthday(), "AE77", "AU77", "BG77");
 
         writeToDoc(sheet,
-                new CellReference(
-                        citizen.getGender() == Person.Genders.MALE
-                                ? "CY21"
-                                : "DS21"
-                ),
+                new CellReference(citizen.getGender() == Person.Genders.MALE ? "CY21" : "DS21"),
+                "х");
+        writeToDoc(sheet,
+                new CellReference(citizen.getGender() == Person.Genders.MALE ? "DC77" : "DW77"),
                 "х");
 
         writeToDoc(sheet, new CellReference("AE24"), citizen.getPlaceOfBirth().getCounty());
@@ -157,6 +166,10 @@ public class Application {
         writeToDoc(sheet, new CellReference("BC30"), idDocumentCellValue);
         writeToDoc(sheet, new CellReference("DC30"), identityDocument.getSeries());
         writeToDoc(sheet, new CellReference("DW30"), identityDocument.getIdentifier());
+
+        writeToDoc(sheet, new CellReference("BC80"), idDocumentCellValue);
+        writeToDoc(sheet, new CellReference("DC80"), identityDocument.getSeries());
+        writeToDoc(sheet, new CellReference("DW80"), identityDocument.getIdentifier());
 
         writeDateToDoc(sheet, identityDocument.getDateOfIssueDate(), "AA32", "AQ32", "BC32");
         writeDateToDoc(sheet, identityDocument.getValidityTillDate(), "CM32", "DC32", "DO32");
@@ -233,6 +246,7 @@ public class Application {
     }
 
     private static void writeToDoc(HSSFSheet sheet, CellReference start, String data) {
+        // TODO: set font style
 
         Row row = sheet.getRow(start.getRow());
 

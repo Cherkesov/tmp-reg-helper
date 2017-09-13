@@ -6,12 +6,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by goforbroke on 16.06.17.
- */
 public class DateBlock implements IUIBlock<Date> {
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public DateBlock() {
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    }
+
+    public DateBlock(SimpleDateFormat simpleDateFormat) {
+        this.simpleDateFormat = simpleDateFormat;
+    }
 
     @Override
     public Date apply(BufferedReader reader, String propertyName) {
@@ -24,7 +28,7 @@ public class DateBlock implements IUIBlock<Date> {
                 + (
                 null != defaultValue
                         ? " [" + simpleDateFormat.format(defaultValue) + "]"
-                        : " (input format yyyy-mm-dd)")
+                        : " (input format " + simpleDateFormat.toPattern() + ")")
                 + ": ");
 
         String line = null;

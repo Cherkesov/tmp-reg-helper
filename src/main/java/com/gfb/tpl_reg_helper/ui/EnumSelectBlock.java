@@ -3,9 +3,6 @@ package com.gfb.tpl_reg_helper.ui;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-/**
- * Created by goforbroke on 13.06.17.
- */
 public class EnumSelectBlock<E extends Enum> implements IUIBlock<E> {
 
     private E[] enumConstants;
