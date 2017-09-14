@@ -1,0 +1,51 @@
+{
+  "cell-aliases": {
+    "last-name": [
+      "W13",
+      "W69"
+    ],
+    "first-and-second-name": [
+      "W15",
+      "W71"
+    ],
+    "nationality": [
+      "AA18",
+      "AA74"
+    ]
+  },
+  "receiving-party": {
+    "person-variants": [
+    ],
+    "address-variants": [
+      {
+        "type": "organisation",
+        "region": "",
+        "district": "",
+        "city": "",
+        "street": "",
+        "house": "",
+        "unit": "",
+        "building": "",
+        "flat": "",
+        "phone": "",
+        "organisation": {
+          "name": "",
+          "address": "",
+          "tin-code": ""
+        }
+      },
+      {
+        "type": "person",
+        "region": "",
+        "district": "",
+        "city": "",
+        "street": "",
+        "house": "",
+        "unit": "",
+        "building": "",
+        "flat": "",
+        "phone": ""
+      }
+    ]
+  }
+}

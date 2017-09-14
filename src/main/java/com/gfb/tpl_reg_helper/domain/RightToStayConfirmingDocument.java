@@ -7,6 +7,7 @@ import java.util.Date;
  */
 public class RightToStayConfirmingDocument {
     public enum Types {
+        NONE,
         VISA, // виза
         RESIDENCE_PERMIT, // вид на жительство
         TMP_RESIDENCE_PERMIT // разрешение на временное проживание
