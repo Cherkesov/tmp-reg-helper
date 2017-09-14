@@ -2,9 +2,6 @@ package com.gfb.tpl_reg_helper.domain;
 
 import java.util.Date;
 
-/**
- * Created by goforbroke on 12.06.17.
- */
 public class IdentityDocument {
     public enum Types {PASSPORT}
 

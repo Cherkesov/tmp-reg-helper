@@ -1,8 +1,5 @@
 package com.gfb.tpl_reg_helper.domain;
 
-/**
- * Created by goforbroke on 12.06.17.
- */
 public class PlaceOfBirth {
     private String county;
     private String city;
