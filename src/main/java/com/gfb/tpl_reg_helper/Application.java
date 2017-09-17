@@ -6,11 +6,16 @@ import com.gfb.tpl_reg_helper.domain.PlaceOfBirth;
 import com.gfb.tpl_reg_helper.domain.RightToStayConfirmingDocument;
 import com.gfb.tpl_reg_helper.ui.DateBlock;
 import com.gfb.tpl_reg_helper.ui.EnumSelectBlock;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 import java.awt.*;
 import java.io.*;
@@ -21,6 +26,8 @@ import java.util.Date;
 public class Application {
 
     public static final SimpleDateFormat RUSSIAN_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+    private static HSSFWorkbook book;
+    private static HSSFCellStyle style;
 
     public static void main(String[] args) throws IOException, ParseException {
 
@@ -93,7 +100,7 @@ public class Application {
 
             RightToStayConfirmingDocument.Types type =
                     new EnumSelectBlock<RightToStayConfirmingDocument.Types>(RightToStayConfirmingDocument.Types.class.getEnumConstants())
-                    .apply(reader, "  Type", document.getType());
+                            .apply(reader, "  Type", document.getType());
             document.setType(type);
 
             System.out.print("  Series: ");
@@ -123,7 +130,7 @@ public class Application {
         String appDir = System.getProperty("user.home") + "/tpl-reg-helper";
         String filenameSuffix = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date()) + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
         File file = cloneBlankDoc(appDir, "blank-form.xls", filenameSuffix);
-        HSSFWorkbook book = new HSSFWorkbook(new FileInputStream(file));
+        book = new HSSFWorkbook(new FileInputStream(file));
         HSSFSheet sheet = book.getSheet("стр.1");
 
         writeToDoc(sheet, new CellReference("W13"), citizen.getLastName());
@@ -239,14 +246,17 @@ public class Application {
         System.out.println("\n\nSee you later! =))");
     }
 
-    private static void writeDateToDoc(HSSFSheet sheet, Date data, String daysPos, String monthPos, String yearPos) {
-        writeToDoc(sheet, new CellReference(daysPos), new SimpleDateFormat("dd").format(data));
-        writeToDoc(sheet, new CellReference(monthPos), new SimpleDateFormat("MM").format(data));
-        writeToDoc(sheet, new CellReference(yearPos), new SimpleDateFormat("yyyy").format(data));
+    private static void writeDateToDoc(HSSFSheet sheet, Date date, String daysPos, String monthPos, String yearPos) {
+        if (null == date)
+            return;
+        writeToDoc(sheet, new CellReference(daysPos), new SimpleDateFormat("dd").format(date));
+        writeToDoc(sheet, new CellReference(monthPos), new SimpleDateFormat("MM").format(date));
+        writeToDoc(sheet, new CellReference(yearPos), new SimpleDateFormat("yyyy").format(date));
     }
 
     private static void writeToDoc(HSSFSheet sheet, CellReference start, String data) {
         // TODO: set font style
+        initFontStyle();
 
         Row row = sheet.getRow(start.getRow());
 
@@ -255,8 +265,9 @@ public class Application {
         while (offset < data.length()) {
             int cellPos = start.getCol() + offset * step;
             Cell cell = row.getCell(cellPos);
-
             if (null == cell) cell = row.createCell(cellPos);
+
+            cell.setCellStyle(style);
             cell.setCellType(Cell.CELL_TYPE_STRING);
 
             cell.setCellValue(
@@ -264,6 +275,21 @@ public class Application {
             );
 
             offset++;
+        }
+    }
+
+    private static void initFontStyle() {
+        // TODO: move to external config
+
+        if (null == style) {
+            HSSFFont font = book.createFont();
+            font.setFontHeightInPoints((short) 8);
+            font.setFontName("Arial Narrow");
+            font.setBold(true);
+//            font.setColor(HSSFColor.BRIGHT_GREEN.index);
+            //Set font into style
+            style = book.createCellStyle();
+            style.setFont(font);
         }
     }
 
