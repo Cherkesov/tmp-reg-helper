@@ -2,11 +2,9 @@ package com.gfb.tpl_reg_helper.domain;
 
 import java.util.Date;
 
-/**
- * Created by goforbroke on 12.06.17.
- */
 public class RightToStayConfirmingDocument {
     public enum Types {
+        NONE,
         VISA, // виза
         RESIDENCE_PERMIT, // вид на жительство
         TMP_RESIDENCE_PERMIT // разрешение на временное проживание

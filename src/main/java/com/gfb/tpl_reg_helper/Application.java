@@ -72,7 +72,7 @@ public class Application {
             IdentityDocument document = new IdentityDocument();
 
             IdentityDocument.Types type =
-                    new EnumSelectBlock<IdentityDocument.Types>(IdentityDocument.Types.class.getEnumConstants())
+                    new EnumSelectBlock<>(IdentityDocument.Types.class.getEnumConstants())
                             .apply(reader, "  Type", document.getType());
             document.setType(type);
 
@@ -94,30 +94,32 @@ public class Application {
             citizen.setPlaceOfBirth(placeOfBirth);
         }
 
-        System.out.println("Identity document (like a passport): ");
+        System.out.println("Right to stay confirming document (like a VISA): ");
         {
             RightToStayConfirmingDocument document = new RightToStayConfirmingDocument();
 
             RightToStayConfirmingDocument.Types type =
-                    new EnumSelectBlock<RightToStayConfirmingDocument.Types>(RightToStayConfirmingDocument.Types.class.getEnumConstants())
+                    new EnumSelectBlock<>(RightToStayConfirmingDocument.Types.class.getEnumConstants())
                             .apply(reader, "  Type", document.getType());
             document.setType(type);
 
-            System.out.print("  Series: ");
-            document.setSeries(reader.readLine());
+            if (document.getType() != RightToStayConfirmingDocument.Types.NONE) {
+                System.out.print("  Series: ");
+                document.setSeries(reader.readLine());
 
-            System.out.print("  Number: ");
-            document.setIdentifier(reader.readLine());
+                System.out.print("  Number: ");
+                document.setIdentifier(reader.readLine());
 
-            Date date1 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
-                    .apply(reader, "  Start date", null);
-            document.setDateOfIssueDate(date1);
+                Date date1 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+                        .apply(reader, "  Start date", null);
+                document.setDateOfIssueDate(date1);
 
-            Date date2 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
-                    .apply(reader, "  Stop date", null);
-            document.setValidityTillDate(date2);
+                Date date2 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+                        .apply(reader, "  Stop date", null);
+                document.setValidityTillDate(date2);
 
-            citizen.setStayConfirmingDocument(document);
+                citizen.setStayConfirmingDocument(document);
+            }
         }
 
         Person.Purposes purpose =
@@ -133,75 +135,11 @@ public class Application {
         book = new HSSFWorkbook(new FileInputStream(file));
         HSSFSheet sheet = book.getSheet("стр.1");
 
-        writeToDoc(sheet, new CellReference("W13"), citizen.getLastName());
-        writeToDoc(sheet, new CellReference("W15"), citizen.getFirstName());
-        writeToDoc(sheet, new CellReference("AA18"), citizen.getNationality());
+        writePersonalData(citizen, sheet);
 
-        writeToDoc(sheet, new CellReference("W69"), citizen.getLastName());
-        writeToDoc(sheet, new CellReference("W71"), citizen.getFirstName());
-        writeToDoc(sheet, new CellReference("AA74"), citizen.getNationality());
+        writeIdentityDocumentData(citizen, sheet);
 
-        writeDateToDoc(sheet, citizen.getBirthday(), "AE21", "AU21", "BG21");
-        writeDateToDoc(sheet, citizen.getBirthday(), "AE77", "AU77", "BG77");
-
-        writeToDoc(sheet,
-                new CellReference(citizen.getGender() == Person.Genders.MALE ? "CY21" : "DS21"),
-                "х");
-        writeToDoc(sheet,
-                new CellReference(citizen.getGender() == Person.Genders.MALE ? "DC77" : "DW77"),
-                "х");
-
-        writeToDoc(sheet, new CellReference("AE24"), citizen.getPlaceOfBirth().getCounty());
-        writeToDoc(sheet, new CellReference("AE27"), citizen.getPlaceOfBirth().getCity());
-
-        IdentityDocument identityDocument = citizen.getIdentityDocument();
-        ;
-        IdentityDocument.Types type = identityDocument.getType();
-
-        String idDocumentCellValue = "";
-        switch (identityDocument.getType()) {
-            case PASSPORT:
-                idDocumentCellValue = "паспорт";
-                break;
-//            case RESIDENCE_PERMIT:
-//                roscDocumentCellName = "AY37";
-//                break;
-//            case TMP_RESIDENCE_PERMIT:
-//                roscDocumentCellName = "CM37";
-//                break;
-        }
-        writeToDoc(sheet, new CellReference("BC30"), idDocumentCellValue);
-        writeToDoc(sheet, new CellReference("DC30"), identityDocument.getSeries());
-        writeToDoc(sheet, new CellReference("DW30"), identityDocument.getIdentifier());
-
-        writeToDoc(sheet, new CellReference("BC80"), idDocumentCellValue);
-        writeToDoc(sheet, new CellReference("DC80"), identityDocument.getSeries());
-        writeToDoc(sheet, new CellReference("DW80"), identityDocument.getIdentifier());
-
-        writeDateToDoc(sheet, identityDocument.getDateOfIssueDate(), "AA32", "AQ32", "BC32");
-        writeDateToDoc(sheet, identityDocument.getValidityTillDate(), "CM32", "DC32", "DO32");
-
-
-        RightToStayConfirmingDocument stayConfirmingDocument = citizen.getStayConfirmingDocument();
-        String roscDocumentCellName = "";
-        switch (stayConfirmingDocument.getType()) {
-            case VISA:
-                roscDocumentCellName = "W37";
-                break;
-            case RESIDENCE_PERMIT:
-                roscDocumentCellName = "AY37";
-                break;
-            case TMP_RESIDENCE_PERMIT:
-                roscDocumentCellName = "CM37";
-                break;
-        }
-        writeToDoc(sheet, new CellReference(roscDocumentCellName), "х");
-
-        writeToDoc(sheet, new CellReference("DC37"), stayConfirmingDocument.getSeries());
-        writeToDoc(sheet, new CellReference("DW37"), stayConfirmingDocument.getIdentifier());
-
-        writeDateToDoc(sheet, stayConfirmingDocument.getDateOfIssueDate(), "AA40", "AQ40", "BC40");
-        writeDateToDoc(sheet, stayConfirmingDocument.getValidityTillDate(), "CM40", "DC40", "DO40");
+        writeRightToStayDocumentData(citizen, sheet);
 
 
         String purposeCellName = "";
@@ -244,6 +182,78 @@ public class Application {
         Desktop.getDesktop().open(new File(appDir));
 
         System.out.println("\n\nSee you later! =))");
+    }
+
+    private static void writePersonalData(Person citizen, HSSFSheet sheet) {
+        writeToDoc(sheet, new CellReference("W13"), citizen.getLastName());
+        writeToDoc(sheet, new CellReference("W15"), citizen.getFirstName());
+        writeToDoc(sheet, new CellReference("AA18"), citizen.getNationality());
+
+        writeToDoc(sheet, new CellReference("W69"), citizen.getLastName());
+        writeToDoc(sheet, new CellReference("W71"), citizen.getFirstName());
+        writeToDoc(sheet, new CellReference("AA74"), citizen.getNationality());
+
+        writeDateToDoc(sheet, citizen.getBirthday(), "AE21", "AU21", "BG21");
+        writeDateToDoc(sheet, citizen.getBirthday(), "AE77", "AU77", "BG77");
+
+        boolean isMale = citizen.getGender() == Person.Genders.MALE;
+        writeToDoc(sheet, new CellReference(isMale ? "CY21" : "DS21"), "х");
+        writeToDoc(sheet, new CellReference(isMale ? "DC77" : "DW77"), "х");
+
+        writeToDoc(sheet, new CellReference("AE24"), citizen.getPlaceOfBirth().getCounty());
+        writeToDoc(sheet, new CellReference("AE27"), citizen.getPlaceOfBirth().getCity());
+    }
+
+    private static void writeIdentityDocumentData(Person citizen, HSSFSheet sheet) {
+        IdentityDocument identityDocument = citizen.getIdentityDocument();
+
+        String idDocumentCellValue = "";
+        switch (identityDocument.getType()) {
+            case PASSPORT:
+                idDocumentCellValue = "паспорт";
+                break;
+//            case RESIDENCE_PERMIT:
+//                roscDocumentCellName = "AY37";
+//                break;
+//            case TMP_RESIDENCE_PERMIT:
+//                roscDocumentCellName = "CM37";
+//                break;
+        }
+        writeToDoc(sheet, new CellReference("BC30"), idDocumentCellValue);
+        writeToDoc(sheet, new CellReference("DC30"), identityDocument.getSeries());
+        writeToDoc(sheet, new CellReference("DW30"), identityDocument.getIdentifier());
+
+        writeToDoc(sheet, new CellReference("BC80"), idDocumentCellValue);
+        writeToDoc(sheet, new CellReference("DC80"), identityDocument.getSeries());
+        writeToDoc(sheet, new CellReference("DW80"), identityDocument.getIdentifier());
+
+        writeDateToDoc(sheet, identityDocument.getDateOfIssueDate(), "AA32", "AQ32", "BC32");
+        writeDateToDoc(sheet, identityDocument.getValidityTillDate(), "CM32", "DC32", "DO32");
+    }
+
+    private static void writeRightToStayDocumentData(Person citizen, HSSFSheet sheet) {
+        RightToStayConfirmingDocument stayConfirmingDocument = citizen.getStayConfirmingDocument();
+        String roscDocumentCellName = null;
+        switch (stayConfirmingDocument.getType()) {
+            case NONE:
+                return;
+            case VISA:
+                roscDocumentCellName = "W37";
+                break;
+            case RESIDENCE_PERMIT:
+                roscDocumentCellName = "AY37";
+                break;
+            case TMP_RESIDENCE_PERMIT:
+                roscDocumentCellName = "CM37";
+                break;
+        }
+        writeToDoc(sheet, new CellReference(roscDocumentCellName), "х");
+
+        writeToDoc(sheet, new CellReference("DC37"), stayConfirmingDocument.getSeries());
+        writeToDoc(sheet, new CellReference("DW37"), stayConfirmingDocument.getIdentifier());
+
+        writeDateToDoc(sheet, stayConfirmingDocument.getDateOfIssueDate(), "AA40", "AQ40", "BC40");
+        writeDateToDoc(sheet, stayConfirmingDocument.getValidityTillDate(), "CM40", "DC40", "DO40");
     }
 
     private static void writeDateToDoc(HSSFSheet sheet, Date date, String daysPos, String monthPos, String yearPos) {

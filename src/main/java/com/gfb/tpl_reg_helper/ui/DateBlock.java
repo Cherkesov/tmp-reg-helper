@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DateBlock implements IUIBlock<Date> {
+public class DateBlock implements UIBlock<Date> {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public DateBlock() {
