@@ -117,9 +117,9 @@ public class Application {
                 Date date2 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
                         .apply(reader, "  Stop date", null);
                 document.setValidityTillDate(date2);
-
-                citizen.setStayConfirmingDocument(document);
             }
+
+            citizen.setStayConfirmingDocument(document);
         }
 
         Person.Purposes purpose =
