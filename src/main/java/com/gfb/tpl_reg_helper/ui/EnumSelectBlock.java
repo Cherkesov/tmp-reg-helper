@@ -25,22 +25,21 @@ public class EnumSelectBlock<E extends Enum> implements UIBlock<E> {
         System.out.println(propertyName
                 + (null != defaultValue ? " [" + defaultValue + "]" : "")
                 + ": ");
-        int genderCounter = 1;
+        int counter = 1;
         for (Enum anEnum : enumConstants) {
-            System.out.println(genderCounter + ") " + anEnum.name());
-            genderCounter++;
+            System.out.println("    " + counter + ") " + anEnum.name());
+            counter++;
         }
         System.out.print("  Select case: ");
         String line = null;
         try {
             line = reader.readLine();
         } catch (IOException e1) {
-//            e1.printStackTrace();
             return null;
         }
         if (line.length() > 0) {
-            int genderPos = Integer.parseInt(line);
-            return enumConstants[genderPos - 1];
+            int pos = Integer.parseInt(line);
+            return enumConstants[pos - 1];
         }
         return null;
     }

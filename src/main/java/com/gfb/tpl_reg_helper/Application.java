@@ -1,9 +1,6 @@
 package com.gfb.tpl_reg_helper;
 
-import com.gfb.tpl_reg_helper.domain.IdentityDocument;
-import com.gfb.tpl_reg_helper.domain.Person;
-import com.gfb.tpl_reg_helper.domain.PlaceOfBirth;
-import com.gfb.tpl_reg_helper.domain.RightToStayConfirmingDocument;
+import com.gfb.tpl_reg_helper.domain.*;
 import com.gfb.tpl_reg_helper.ui.DateBlock;
 import com.gfb.tpl_reg_helper.ui.EnumSelectBlock;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -11,11 +8,8 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 import java.awt.*;
 import java.io.*;
@@ -31,7 +25,7 @@ public class Application {
 
     public static void main(String[] args) throws IOException, ParseException {
 
-        BufferedReader reader = null;
+        BufferedReader reader;
         reader = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("---------- ---------- ---------- ----------");
@@ -56,7 +50,7 @@ public class Application {
                 .apply(reader, "Birthday", null);
         citizen.setBirthday(birthday);
 
-        Person.Genders gender = new EnumSelectBlock<Person.Genders>(Person.Genders.class.getEnumConstants())
+        Person.Genders gender = new EnumSelectBlock<>(Person.Genders.class.getEnumConstants())
                 .apply(reader, "Gender", citizen.getGender());
         citizen.setGender(gender);
 
@@ -82,11 +76,11 @@ public class Application {
             System.out.print("  Number: ");
             document.setIdentifier(reader.readLine());
 
-            Date date1 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+            Date date1 = new DateBlock(RUSSIAN_DATE_FORMAT)
                     .apply(reader, "  Start date", null);
             document.setDateOfIssueDate(date1);
 
-            Date date2 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+            Date date2 = new DateBlock(RUSSIAN_DATE_FORMAT)
                     .apply(reader, "  Stop date", null);
             document.setValidityTillDate(date2);
 
@@ -110,11 +104,11 @@ public class Application {
                 System.out.print("  Number: ");
                 document.setIdentifier(reader.readLine());
 
-                Date date1 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+                Date date1 = new DateBlock(RUSSIAN_DATE_FORMAT)
                         .apply(reader, "  Start date", null);
                 document.setDateOfIssueDate(date1);
 
-                Date date2 = new DateBlock(new SimpleDateFormat("dd.MM.yyyy"))
+                Date date2 = new DateBlock(RUSSIAN_DATE_FORMAT)
                         .apply(reader, "  Stop date", null);
                 document.setValidityTillDate(date2);
             }
@@ -122,10 +116,25 @@ public class Application {
             citizen.setStayConfirmingDocument(document);
         }
 
-        Person.Purposes purpose =
-                new EnumSelectBlock<Person.Purposes>(Person.Purposes.class.getEnumConstants())
-                        .apply(reader, "  Purpose", citizen.getPurpose());
+        Person.Purposes purpose = new EnumSelectBlock<>(Person.Purposes.class.getEnumConstants())
+                .apply(reader, "  Purpose", citizen.getPurpose());
         citizen.setPurpose(purpose);
+
+        Date arrivalDate = new DateBlock(RUSSIAN_DATE_FORMAT)
+                .apply(reader, "  Arrival date", new Date());
+        citizen.setArrivalDate(arrivalDate);
+
+        Date durationDate = new DateBlock(RUSSIAN_DATE_FORMAT)
+                .apply(reader, "  Duration of stay", new Date());
+        citizen.setDurationOfStay(durationDate);
+
+        final MigrationCard migrationCard = new MigrationCard();
+        System.out.println("Migration card: ");
+        System.out.print("  Series: ");
+        migrationCard.setSeries(reader.readLine());
+        System.out.print("  Number: ");
+        migrationCard.setNumber(reader.readLine());
+        citizen.setMigrationCard(migrationCard);
 
         //
 
@@ -140,7 +149,6 @@ public class Application {
         writeIdentityDocumentData(citizen, sheet);
 
         writeRightToStayDocumentData(citizen, sheet);
-
 
         String purposeCellName = "";
         switch (citizen.getPurpose()) {
@@ -174,6 +182,9 @@ public class Application {
         }
         writeToDoc(sheet, new CellReference(purposeCellName), "х");
 
+        writePeriodToStay(citizen, sheet);
+
+        writeMigrationCard(citizen, sheet);
 
         // Записываем всё в файл
         book.write(new FileOutputStream(file));
@@ -256,6 +267,19 @@ public class Application {
         writeDateToDoc(sheet, stayConfirmingDocument.getValidityTillDate(), "CM40", "DC40", "DO40");
     }
 
+    private static void writePeriodToStay(Person citizen, HSSFSheet sheet) {
+        writeDateToDoc(sheet, citizen.getArrivalDate(), "AI47", "AY47", "BK47");
+        writeDateToDoc(sheet, citizen.getDurationOfStay(), "DO47", "EE47", "EQ47");
+        writeDateToDoc(sheet, citizen.getDurationOfStay(), "AQ95", "BG95", "BS95");
+    }
+
+    private static void writeMigrationCard(Person citizen, HSSFSheet sheet) {
+        writeToDoc(sheet, new CellReference("AQ49"), citizen.getMigrationCard().getSeries());
+        writeToDoc(sheet, new CellReference("BK49"), citizen.getMigrationCard().getNumber());
+    }
+
+    //
+
     private static void writeDateToDoc(HSSFSheet sheet, Date date, String daysPos, String monthPos, String yearPos) {
         if (null == date)
             return;
@@ -296,10 +320,13 @@ public class Application {
             font.setFontHeightInPoints((short) 8);
             font.setFontName("Arial Narrow");
             font.setBold(true);
-//            font.setColor(HSSFColor.BRIGHT_GREEN.index);
-            //Set font into style
             style = book.createCellStyle();
             style.setFont(font);
+
+//            style.setBorderTop((short) 1);
+//            style.setBorderRight((short) 1);
+//            style.setBorderBottom((short) 1);
+//            style.setBorderLeft((short) 1);
         }
     }
 
