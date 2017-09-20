@@ -19,7 +19,8 @@ import java.util.Date;
 
 public class Application {
 
-    public static final SimpleDateFormat RUSSIAN_DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+    private static final SimpleDateFormat RUSSIAN_DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
+
     private static HSSFWorkbook book;
     private static HSSFCellStyle style;
 
