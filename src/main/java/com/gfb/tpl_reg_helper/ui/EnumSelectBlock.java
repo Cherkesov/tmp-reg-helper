@@ -22,25 +22,24 @@ public class EnumSelectBlock<E extends Enum> implements UIBlock<E> {
             String propertyName,
             E defaultValue
     ) {
-        System.out.println(propertyName
-                + (null != defaultValue ? " [" + defaultValue + "]" : "")
-                + ": ");
-        int counter = 1;
-        for (Enum anEnum : enumConstants) {
-            System.out.println("    " + counter + ") " + anEnum.name());
-            counter++;
-        }
-        System.out.print("  Select case: ");
-        String line = null;
         try {
-            line = reader.readLine();
-        } catch (IOException e1) {
-            return null;
+            System.out.println(propertyName
+                    + (null != defaultValue ? " [" + defaultValue + "]" : "")
+                    + ": ");
+            int counter = 1;
+            for (Enum anEnum : enumConstants) {
+                System.out.println("    " + counter + ") " + anEnum.name());
+                counter++;
+            }
+            System.out.print("  Select case: ");
+            String line = reader.readLine();
+            if (line.length() > 0) {
+                int pos = Integer.parseInt(line);
+                return enumConstants[pos - 1];
+            }
+        } catch (NumberFormatException | IOException e) {
+            //
         }
-        if (line.length() > 0) {
-            int pos = Integer.parseInt(line);
-            return enumConstants[pos - 1];
-        }
-        return null;
+        return defaultValue;
     }
 }
