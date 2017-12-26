@@ -140,7 +140,7 @@ public class Application {
         //
 
         String appDir = System.getProperty("user.home") + "/tpl-reg-helper";
-        String filenameSuffix = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date()) + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
+        String filenameSuffix = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()) + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
         File file = cloneBlankDoc(appDir, "blank-form.xls", filenameSuffix);
         book = new HSSFWorkbook(new FileInputStream(file));
         HSSFSheet sheet = book.getSheet("стр.1");

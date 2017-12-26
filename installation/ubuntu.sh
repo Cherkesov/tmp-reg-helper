@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+sudo apt-get update
+sudo apt-get install -y default-jre
+
 mkdir -p ~/tpl-reg-helper
 cp ./blank-form.xls ~/tpl-reg-helper/blank-form.xls
 cp ./tpl-reg-helper-1.0-SNAPSHOT.jar ~/tpl-reg-helper/tpl-reg-helper-1.0-SNAPSHOT.jar
