@@ -191,7 +191,7 @@ public class Application {
         book.write(new FileOutputStream(file));
         book.close();
 
-        Desktop.getDesktop().open(new File(appDir));
+//        Desktop.getDesktop().open(new File(appDir));
 
         System.out.println("\n\nSee you later! =))");
     }
