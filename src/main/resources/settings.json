@@ -1,19 +1,28 @@
 {
   "template-file": "blank-form.xls",
-  "cell-aliases": {
-    "last-name": [
-      "W13",
-      "W69"
-    ],
-    "first-and-second-name": [
-      "W15",
-      "W71"
-    ],
-    "nationality": [
-      "AA18",
-      "AA74"
-    ]
-  },
+  "cell-aliases": [
+    {
+      "label": "Last name",
+      "columns": [
+        "W13",
+        "W69"
+      ]
+    },
+    {
+      "label": "First and last name",
+      "columns": [
+        "W15",
+        "W71"
+      ]
+    },
+    {
+      "label": "Nationality",
+      "columns": [
+        "AA18",
+        "AA74"
+      ]
+    }
+  ],
   "receiving-party": {
     "person-variants": [
     ],
@@ -50,11 +59,21 @@
     ]
   },
   "countries": [
-    {"name": "Китай"},
-    {"name": "Эстония"}
+    {
+      "name": "Китай"
+    },
+    {
+      "name": "Эстония"
+    }
   ],
   "migration-card": [
-    {"series": "4617", "name": "Шереметьево (Мск)"},
-    {"series": "4017", "name": "Иван город"}
+    {
+      "series": "4617",
+      "name": "Шереметьево (Мск)"
+    },
+    {
+      "series": "4017",
+      "name": "Иван город"
+    }
   ]
 }
