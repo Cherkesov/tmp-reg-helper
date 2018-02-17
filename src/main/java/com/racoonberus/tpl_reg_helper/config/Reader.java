@@ -1,7 +1,7 @@
-package com.gfb.tpl_reg_helper.config;
+package com.racoonberus.tpl_reg_helper.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gfb.tpl_reg_helper.domain.config.Configuration;
+import com.racoonberus.tpl_reg_helper.domain.config.Configuration;
 
 import java.io.*;
 

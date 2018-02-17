@@ -1,16 +1,11 @@
-package com.gfb.tpl_reg_helper.domain;
+package com.racoonberus.tpl_reg_helper.domain;
 
 import java.util.Date;
 
-public class RightToStayConfirmingDocument {
-    public enum Types {
-        NONE,
-        VISA, // виза
-        RESIDENCE_PERMIT, // вид на жительство
-        TMP_RESIDENCE_PERMIT // разрешение на временное проживание
-    }
+public class IdentityDocument {
+    public enum Types {PASSPORT}
 
-    private Types type = Types.VISA;
+    private Types type = Types.PASSPORT;
 
     private String series;
     private String identifier;
@@ -22,7 +17,7 @@ public class RightToStayConfirmingDocument {
         return type;
     }
 
-    public RightToStayConfirmingDocument setType(Types type) {
+    public IdentityDocument setType(Types type) {
         this.type = type;
         return this;
     }
@@ -31,7 +26,7 @@ public class RightToStayConfirmingDocument {
         return series;
     }
 
-    public RightToStayConfirmingDocument setSeries(String series) {
+    public IdentityDocument setSeries(String series) {
         this.series = series;
         return this;
     }
@@ -40,7 +35,7 @@ public class RightToStayConfirmingDocument {
         return identifier;
     }
 
-    public RightToStayConfirmingDocument setIdentifier(String identifier) {
+    public IdentityDocument setIdentifier(String identifier) {
         this.identifier = identifier;
         return this;
     }
@@ -49,7 +44,7 @@ public class RightToStayConfirmingDocument {
         return dateOfIssueDate;
     }
 
-    public RightToStayConfirmingDocument setDateOfIssueDate(Date dateOfIssueDate) {
+    public IdentityDocument setDateOfIssueDate(Date dateOfIssueDate) {
         this.dateOfIssueDate = dateOfIssueDate;
         return this;
     }
@@ -58,7 +53,7 @@ public class RightToStayConfirmingDocument {
         return validityTillDate;
     }
 
-    public RightToStayConfirmingDocument setValidityTillDate(Date validityTillDate) {
+    public IdentityDocument setValidityTillDate(Date validityTillDate) {
         this.validityTillDate = validityTillDate;
         return this;
     }

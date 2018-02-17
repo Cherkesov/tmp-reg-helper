@@ -1,11 +1,16 @@
-package com.gfb.tpl_reg_helper.domain;
+package com.racoonberus.tpl_reg_helper.domain;
 
 import java.util.Date;
 
-public class IdentityDocument {
-    public enum Types {PASSPORT}
+public class RightToStayConfirmingDocument {
+    public enum Types {
+        NONE,
+        VISA, // виза
+        RESIDENCE_PERMIT, // вид на жительство
+        TMP_RESIDENCE_PERMIT // разрешение на временное проживание
+    }
 
-    private Types type = Types.PASSPORT;
+    private Types type = Types.VISA;
 
     private String series;
     private String identifier;
@@ -17,7 +22,7 @@ public class IdentityDocument {
         return type;
     }
 
-    public IdentityDocument setType(Types type) {
+    public RightToStayConfirmingDocument setType(Types type) {
         this.type = type;
         return this;
     }
@@ -26,7 +31,7 @@ public class IdentityDocument {
         return series;
     }
 
-    public IdentityDocument setSeries(String series) {
+    public RightToStayConfirmingDocument setSeries(String series) {
         this.series = series;
         return this;
     }
@@ -35,7 +40,7 @@ public class IdentityDocument {
         return identifier;
     }
 
-    public IdentityDocument setIdentifier(String identifier) {
+    public RightToStayConfirmingDocument setIdentifier(String identifier) {
         this.identifier = identifier;
         return this;
     }
@@ -44,7 +49,7 @@ public class IdentityDocument {
         return dateOfIssueDate;
     }
 
-    public IdentityDocument setDateOfIssueDate(Date dateOfIssueDate) {
+    public RightToStayConfirmingDocument setDateOfIssueDate(Date dateOfIssueDate) {
         this.dateOfIssueDate = dateOfIssueDate;
         return this;
     }
@@ -53,7 +58,7 @@ public class IdentityDocument {
         return validityTillDate;
     }
 
-    public IdentityDocument setValidityTillDate(Date validityTillDate) {
+    public RightToStayConfirmingDocument setValidityTillDate(Date validityTillDate) {
         this.validityTillDate = validityTillDate;
         return this;
     }

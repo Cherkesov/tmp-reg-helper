@@ -25,7 +25,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.gfb.tpl_reg_helper.Application</mainClass>
+                            <mainClass>com.racoonberus.tpl_reg_helper.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
