@@ -4,7 +4,7 @@ import com.racoonberus.tpl_reg_helper.domain.config.Configuration;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ReaderTest {
+public class ReaderCheck {
     @Test
     public void fromString() throws Exception {
         Configuration actual = Reader.fromString("" +
