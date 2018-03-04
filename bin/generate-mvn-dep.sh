@@ -5,14 +5,19 @@ currentBranch=$(git rev-parse --abbrev-ref HEAD)
 git checkout repository
 git merge master
 
-echo "Specify build version: "
-read version
+artifactId=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate \
+    -Dexpression=project.artifactId | grep -v '\[')
+version=$(mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate \
+    -Dexpression=project.version | grep -v '\[')
 
+echo "Build ${artifactId}:${version}"
+
+mvn package
 mvn install:install-file \
 	-DgroupId=com.racoonberus.hotelHero \
 	-DartifactId=tplRegHelper \
 	-Dversion=${version} \
-	-Dfile=target/tpl-reg-helper-1.0-SNAPSHOT.jar \
+	-Dfile=target/${artifactId}-${version}.jar \
 	-Dpackaging=jar \
 	-DgeneratePom=true \
 	-DlocalRepositoryPath=. \
