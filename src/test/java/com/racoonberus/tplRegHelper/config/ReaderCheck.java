@@ -1,6 +1,6 @@
-package com.racoonberus.tpl_reg_helper.config;
+package com.racoonberus.tplRegHelper.config;
 
-import com.racoonberus.tpl_reg_helper.domain.config.Configuration;
+import com.racoonberus.tplRegHelper.domain.config.Configuration;
 import org.junit.Assert;
 import org.junit.Test;
 

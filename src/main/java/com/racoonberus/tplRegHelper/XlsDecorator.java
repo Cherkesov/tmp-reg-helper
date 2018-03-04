@@ -1,8 +1,8 @@
-package com.racoonberus.tpl_reg_helper;
+package com.racoonberus.tplRegHelper;
 
-import com.racoonberus.tpl_reg_helper.domain.IdentityDocument;
-import com.racoonberus.tpl_reg_helper.domain.Person;
-import com.racoonberus.tpl_reg_helper.domain.RightToStayConfirmingDocument;
+import com.racoonberus.tplRegHelper.domain.IdentityDocument;
+import com.racoonberus.tplRegHelper.domain.Person;
+import com.racoonberus.tplRegHelper.domain.RightToStayConfirmingDocument;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.*;
 

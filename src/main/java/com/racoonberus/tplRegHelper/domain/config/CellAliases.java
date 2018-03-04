@@ -1,4 +1,4 @@
-package com.racoonberus.tpl_reg_helper.domain.config;
+package com.racoonberus.tplRegHelper.domain.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

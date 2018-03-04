@@ -1,4 +1,4 @@
-package com.racoonberus.tpl_reg_helper.domain;
+package com.racoonberus.tplRegHelper.domain;
 
 public class MigrationCard {
     private String series;
