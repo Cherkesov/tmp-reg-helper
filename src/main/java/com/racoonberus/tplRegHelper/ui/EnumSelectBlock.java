@@ -1,4 +1,4 @@
-package com.racoonberus.tpl_reg_helper.ui;
+package com.racoonberus.tplRegHelper.ui;
 
 import java.io.BufferedReader;
 import java.io.IOException;
