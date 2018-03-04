@@ -10,6 +10,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.text.ParseException;
@@ -20,10 +22,13 @@ public class Application {
 
     private static final SimpleDateFormat RUSSIAN_DATE_FORMAT = new SimpleDateFormat("ddMMyyyy");
 
-    private static HSSFWorkbook book;
-    private static HSSFCellStyle style;
+//    private static HSSFWorkbook book;
+
 
     public static void main(String[] args) throws IOException, ParseException {
+
+        File proto = new File(Application.class.getResource("/blank.xlsx").getFile());
+
 
         BufferedReader reader;
         reader = new BufferedReader(new InputStreamReader(System.in));
@@ -138,56 +143,20 @@ public class Application {
 
         //
 
-        String appDir = System.getProperty("user.home") + "/tpl-reg-helper";
-        String filenameSuffix = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()) + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
-        File file = cloneBlankDoc(appDir, "blank-form.xls", filenameSuffix);
-        book = new HSSFWorkbook(new FileInputStream(file));
-        HSSFSheet sheet = book.getSheet("стр.1");
+//        String appDir = System.getProperty("user.home") + "/tpl-reg-helper";
+//        String filenameSuffix = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()) + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
+//        File file = cloneBlankDoc(appDir, "blank-form.xls", filenameSuffix);
+//        book = new HSSFWorkbook(new FileInputStream(file));
 
-        writePersonalData(citizen, sheet);
+        String outDir = System.getProperty("user.home") + "/tpl-reg-helper";
+        String fn = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()) + "-" + citizen.getLastName() + "-" + citizen.getFirstName();
+        File outFile = getBlankCopy(proto, outDir, fn);
+        Workbook book = new XSSFWorkbook(new FileInputStream(outFile));
 
-        writeIdentityDocumentData(citizen, sheet);
-
-        writeRightToStayDocumentData(citizen, sheet);
-
-        String purposeCellName = "";
-        switch (citizen.getPurpose()) {
-            case BUSINESS_TRIP:
-                purposeCellName = "AM43";
-                break;
-            case TOURISM:
-                purposeCellName = "AY43";
-                break;
-            case BUSINESS:
-                purposeCellName = "BO43";
-                break;
-            case LEARNING:
-                purposeCellName = "CA43";
-                break;
-            case JOB:
-                purposeCellName = "CM43";
-                break;
-            case PRIVATE:
-                purposeCellName = "CY43";
-                break;
-            case TRANSIT:
-                purposeCellName = "DK43";
-                break;
-            case HUMANITARIAN:
-                purposeCellName = "EE43";
-                break;
-            case ANOTHER:
-                purposeCellName = "EQ43";
-                break;
-        }
-        writeToDoc(sheet, new CellReference(purposeCellName), "х");
-
-        writePeriodToStay(citizen, sheet);
-
-        writeMigrationCard(citizen, sheet);
+        new XlsDecorator(book).write(citizen);
 
         // Записываем всё в файл
-        book.write(new FileOutputStream(file));
+        book.write(new FileOutputStream(outFile));
         book.close();
 
 //        Desktop.getDesktop().open(new File(appDir));
@@ -195,139 +164,22 @@ public class Application {
         System.out.println("\n\nSee you later! =))");
     }
 
-    private static void writePersonalData(Person citizen, HSSFSheet sheet) {
-        writeToDoc(sheet, new CellReference("W13"), citizen.getLastName());
-        writeToDoc(sheet, new CellReference("W15"), citizen.getFirstName());
-        writeToDoc(sheet, new CellReference("AA18"), citizen.getNationality());
+    private static File getBlankCopy(File proto, String distDir, String docFileName) throws IOException {
+        File bfile = new File(distDir + "/" + docFileName + ".xls");
 
-        writeToDoc(sheet, new CellReference("W69"), citizen.getLastName());
-        writeToDoc(sheet, new CellReference("W71"), citizen.getFirstName());
-        writeToDoc(sheet, new CellReference("AA74"), citizen.getNationality());
+        InputStream inStream = new FileInputStream(proto);
+        OutputStream outStream = new FileOutputStream(bfile);
 
-        writeDateToDoc(sheet, citizen.getBirthday(), "AE21", "AU21", "BG21");
-        writeDateToDoc(sheet, citizen.getBirthday(), "AE77", "AU77", "BG77");
-
-        boolean isMale = citizen.getGender() == Person.Genders.MALE;
-        writeToDoc(sheet, new CellReference(isMale ? "CY21" : "DS21"), "х");
-        writeToDoc(sheet, new CellReference(isMale ? "DC77" : "DW77"), "х");
-
-        writeToDoc(sheet, new CellReference("AE24"), citizen.getPlaceOfBirth().getCounty());
-        writeToDoc(sheet, new CellReference("AE27"), citizen.getPlaceOfBirth().getCity());
-    }
-
-    private static void writeIdentityDocumentData(Person citizen, HSSFSheet sheet) {
-        IdentityDocument identityDocument = citizen.getIdentityDocument();
-
-        String idDocumentCellValue = "";
-        switch (identityDocument.getType()) {
-            case PASSPORT:
-                idDocumentCellValue = "паспорт";
-                break;
-//            case RESIDENCE_PERMIT:
-//                roscDocumentCellName = "AY37";
-//                break;
-//            case TMP_RESIDENCE_PERMIT:
-//                roscDocumentCellName = "CM37";
-//                break;
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inStream.read(buffer)) > 0) {
+            outStream.write(buffer, 0, length);
         }
-        writeToDoc(sheet, new CellReference("BC30"), idDocumentCellValue);
-        writeToDoc(sheet, new CellReference("DC30"), identityDocument.getSeries());
-        writeToDoc(sheet, new CellReference("DW30"), identityDocument.getIdentifier());
 
-        writeToDoc(sheet, new CellReference("BC80"), idDocumentCellValue);
-        writeToDoc(sheet, new CellReference("DC80"), identityDocument.getSeries());
-        writeToDoc(sheet, new CellReference("DW80"), identityDocument.getIdentifier());
+        inStream.close();
+        outStream.close();
 
-        writeDateToDoc(sheet, identityDocument.getDateOfIssueDate(), "AA32", "AQ32", "BC32");
-        writeDateToDoc(sheet, identityDocument.getValidityTillDate(), "CM32", "DC32", "DO32");
-    }
-
-    private static void writeRightToStayDocumentData(Person citizen, HSSFSheet sheet) {
-        RightToStayConfirmingDocument stayConfirmingDocument = citizen.getStayConfirmingDocument();
-        String roscDocumentCellName = null;
-        switch (stayConfirmingDocument.getType()) {
-            case NONE:
-                return;
-            case VISA:
-                roscDocumentCellName = "W37";
-                break;
-            case RESIDENCE_PERMIT:
-                roscDocumentCellName = "AY37";
-                break;
-            case TMP_RESIDENCE_PERMIT:
-                roscDocumentCellName = "CM37";
-                break;
-        }
-        writeToDoc(sheet, new CellReference(roscDocumentCellName), "х");
-
-        writeToDoc(sheet, new CellReference("DC37"), stayConfirmingDocument.getSeries());
-        writeToDoc(sheet, new CellReference("DW37"), stayConfirmingDocument.getIdentifier());
-
-        writeDateToDoc(sheet, stayConfirmingDocument.getDateOfIssueDate(), "AA40", "AQ40", "BC40");
-        writeDateToDoc(sheet, stayConfirmingDocument.getValidityTillDate(), "CM40", "DC40", "DO40");
-    }
-
-    private static void writePeriodToStay(Person citizen, HSSFSheet sheet) {
-        writeDateToDoc(sheet, citizen.getArrivalDate(), "AI47", "AY47", "BK47");
-        writeDateToDoc(sheet, citizen.getDurationOfStay(), "DO47", "EE47", "EQ47");
-        writeDateToDoc(sheet, citizen.getDurationOfStay(), "AQ95", "BG95", "BS95");
-    }
-
-    private static void writeMigrationCard(Person citizen, HSSFSheet sheet) {
-        writeToDoc(sheet, new CellReference("AQ49"), citizen.getMigrationCard().getSeries());
-        writeToDoc(sheet, new CellReference("BK49"), citizen.getMigrationCard().getNumber());
-    }
-
-    //
-
-    private static void writeDateToDoc(HSSFSheet sheet, Date date, String daysPos, String monthPos, String yearPos) {
-        if (null == date)
-            return;
-        writeToDoc(sheet, new CellReference(daysPos), new SimpleDateFormat("dd").format(date));
-        writeToDoc(sheet, new CellReference(monthPos), new SimpleDateFormat("MM").format(date));
-        writeToDoc(sheet, new CellReference(yearPos), new SimpleDateFormat("yyyy").format(date));
-    }
-
-    private static void writeToDoc(HSSFSheet sheet, CellReference start, String data) {
-        // TODO: set font style
-        initFontStyle();
-
-        Row row = sheet.getRow(start.getRow());
-
-        int offset = 0, step = 4;
-
-        while (offset < data.length()) {
-            int cellPos = start.getCol() + offset * step;
-            Cell cell = row.getCell(cellPos);
-            if (null == cell) cell = row.createCell(cellPos);
-
-            cell.setCellStyle(style);
-            cell.setCellType(Cell.CELL_TYPE_STRING);
-
-            cell.setCellValue(
-                    data.substring(offset, offset + 1)
-            );
-
-            offset++;
-        }
-    }
-
-    private static void initFontStyle() {
-        // TODO: move to external config
-
-        if (null == style) {
-            HSSFFont font = book.createFont();
-            font.setFontHeightInPoints((short) 8);
-            font.setFontName("Arial Narrow");
-            font.setBold(true);
-            style = book.createCellStyle();
-            style.setFont(font);
-
-//            style.setBorderTop((short) 1);
-//            style.setBorderRight((short) 1);
-//            style.setBorderBottom((short) 1);
-//            style.setBorderLeft((short) 1);
-        }
+        return bfile;
     }
 
     private static File cloneBlankDoc(String appDir, String blankFilename, String resultFilename) throws IOException {
@@ -345,9 +197,7 @@ public class Application {
         int length;
         //copy the file content in bytes
         while ((length = inStream.read(buffer)) > 0) {
-
             outStream.write(buffer, 0, length);
-
         }
 
         inStream.close();
