@@ -158,7 +158,7 @@ public class Application {
     }
 
     private static File getBlankCopy(File proto, String distDir, String docFileName) throws IOException {
-        File bfile = new File(distDir + "/" + docFileName + ".xls");
+        File bfile = new File(distDir + "/" + docFileName + ".xlsx");
 
         InputStream inStream = new FileInputStream(proto);
         OutputStream outStream = new FileOutputStream(bfile);
